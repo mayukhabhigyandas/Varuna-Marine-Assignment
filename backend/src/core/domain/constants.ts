@@ -1,0 +1,2 @@
+export const TARGET_INTENSITY_2025 = 89.3368;
+export const ENERGY_PER_TON_FUEL_MJ = 41000;

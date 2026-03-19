@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
-import { app } from "./app";
+import { createServer } from "./infrastructure/server/createServer";
 
 dotenv.config();
 
-const PORT = Number(process.env.PORT) || 3000;
+const app = createServer();
+const port = Number(process.env.PORT) || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Backend is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Backend is running on port ${port}`);
 });

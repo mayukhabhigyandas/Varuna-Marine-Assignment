@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Route {
+  id         String  @id
+  name       String
+  year       Int
+  intensity  Float
+  isBaseline Boolean @default(false)
+
+  @@index([year])
+  @@index([year, isBaseline])
+}
+
+model ShipEmission {
+  shipId              String
+  year                Int
+  fuelConsumptionTons Float
+  actualIntensity     Float
+
+  @@id([shipId, year])
+}
+
+model ComplianceRecord {
+  shipId            String
+  year              Int
+  targetIntensity   Float
+  actualIntensity   Float
+  energyInScopeMj   Float
+  complianceBalance Float
+  createdAt         DateTime @default(now())
+
+  @@id([shipId, year])
+}
+
+model BankEntry {
+  id                   String   @id @default(uuid())
+  shipId               String
+  year                 Int
+  amount               Float
+  usedAmount           Float    @default(0)
+  sourceComplianceYear Int
+  createdAt            DateTime @default(now())
+
+  @@index([shipId, year])
+}
+
+model Pool {
+  id        String       @id
+  year      Int
+  shipIds   String[]
+  createdAt DateTime     @default(now())
+  members   PoolMember[]
+}
+
+model PoolMember {
+  poolId   String
+  shipId   String
+  year     Int
+  cbBefore Float
+  cbAfter  Float
+
+  pool Pool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+
+  @@id([poolId, shipId])
+  @@index([shipId, year])
+}
