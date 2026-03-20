@@ -19,8 +19,13 @@ export interface RouteComparison {
 
 export interface ShipYearEmission {
   shipId: string;
+  routeId?: string;
   year: number;
+  vesselType?: string;
+  fuelType?: string;
   fuelConsumptionTons: number;
+  distanceKm?: number;
+  totalEmissionsTonnes?: number;
   actualIntensity: number;
 }
 

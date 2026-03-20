@@ -25,7 +25,7 @@ describe("Data Assets", () => {
     expect(seed).toContain("prisma.route.createMany");
     expect(seed).toContain("prisma.shipEmission.createMany");
     expect(seed).toContain("prisma.bankEntry.create");
-    expect(seed).toContain('id: "route-1"');
-    expect(seed).toContain('shipId: "ship-001"');
+    expect(seed).toContain('routeId: "R001"');
+    expect(seed).toContain('shipId: "SHIP_R001"');
   });
 });

@@ -14,6 +14,7 @@ model Route {
   year       Int
   intensity  Float
   isBaseline Boolean @default(false)
+  shipEmission ShipEmission?
 
   @@index([year])
   @@index([year, isBaseline])
@@ -21,11 +22,18 @@ model Route {
 
 model ShipEmission {
   shipId              String
+  routeId             String @unique
   year                Int
+  vesselType          String
+  fuelType            String
   fuelConsumptionTons Float
+  distanceKm          Float
+  totalEmissionsTonnes Float
   actualIntensity     Float
+  route               Route @relation(fields: [routeId], references: [id])
 
   @@id([shipId, year])
+  @@index([year])
 }
 
 model ComplianceRecord {
