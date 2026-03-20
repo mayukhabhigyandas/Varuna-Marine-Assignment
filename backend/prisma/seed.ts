@@ -91,17 +91,6 @@ async function main() {
       actualIntensity: item.ghgIntensity,
     })),
   });
-
-  await prisma.bankEntry.create({
-    data: {
-      id: "bank-seed-1",
-      shipId: "SHIP_R002",
-      year: 2024,
-      amount: 1500000,
-      usedAmount: 0,
-      sourceComplianceYear: 2024,
-    },
-  });
 }
 
 main()

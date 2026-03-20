@@ -44,7 +44,7 @@ export class PostgresRouteRepository implements RouteRepository {
 
     await this.prisma.$transaction([
       this.prisma.route.updateMany({
-        where: { year: routeToSet.year, isBaseline: true },
+        where: { isBaseline: true },
         data: { isBaseline: false },
       }),
       this.prisma.route.update({
