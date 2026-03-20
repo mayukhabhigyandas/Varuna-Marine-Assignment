@@ -48,7 +48,7 @@ const routeShipSeedData = [
     totalEmissionsTonnes: 4300,
   },
   {
-    shipId: "SHIP_R005",
+    shipId: "SHIP_R002",
     routeId: "R005",
     vesselType: "Container",
     fuelType: "LNG",
