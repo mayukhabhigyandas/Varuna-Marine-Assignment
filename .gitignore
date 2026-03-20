@@ -6,6 +6,12 @@ backend/node_modules/
 dist/
 build/
 backend/dist/
+frontend/dist/
+frontend/dist-ssr/
+
+# Tooling caches
+frontend/.vite/
+*.tsbuildinfo
 
 # Environment files
 .env
