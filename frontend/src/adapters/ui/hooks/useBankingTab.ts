@@ -34,13 +34,15 @@ export function useBankingTab(service: BankingTabInputPort, shipOptions: string[
     setError(null);
 
     try {
-      const [cb, bankRecords] = await Promise.all([
+      const [cb, bankRecords, latestApply] = await Promise.all([
         service.getCompliance(shipId, year),
         service.getBankRecords(shipId, year),
+        service.getLatestBankApply(shipId, year),
       ]);
 
       setCompliance(cb);
       setRecords(bankRecords);
+      setLastApplyResult(latestApply);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load banking data");
     } finally {
@@ -99,12 +101,13 @@ export function useBankingTab(service: BankingTabInputPort, shipOptions: string[
     }
   }, [applyAmount, refresh, service, shipId, year]);
 
-  const cbBefore = compliance?.complianceBalance ?? 0;
+  const cbBefore = lastApplyResult?.originalDeficit ?? compliance?.complianceBalance ?? 0;
   const applied = lastApplyResult?.appliedAmount ?? 0;
   const cbAfter = lastApplyResult?.adjustedComplianceBalance ?? cbBefore;
+  const currentBalance = lastApplyResult?.adjustedComplianceBalance ?? compliance?.complianceBalance ?? 0;
 
-  const canBank = useMemo(() => (compliance?.complianceBalance ?? 0) > 0, [compliance]);
-  const canApply = useMemo(() => (compliance?.complianceBalance ?? 0) < 0, [compliance]);
+  const canBank = useMemo(() => currentBalance > 0, [currentBalance]);
+  const canApply = useMemo(() => currentBalance < 0, [currentBalance]);
 
   return {
     shipId,

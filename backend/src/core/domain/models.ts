@@ -63,6 +63,16 @@ export interface BankApplication {
   appliedAmount: number;
 }
 
+export interface BankApplySnapshot {
+  id: string;
+  shipId: string;
+  year: number;
+  cbBefore: number;
+  applied: number;
+  cbAfter: number;
+  createdAt: string;
+}
+
 export interface Pool {
   id: string;
   year: number;

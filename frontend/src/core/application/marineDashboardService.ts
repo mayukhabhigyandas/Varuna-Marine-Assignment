@@ -98,6 +98,10 @@ export class MarineDashboardService
     return this.api.fetchBankRecords(shipId, year);
   }
 
+  getLatestBankApply(shipId: string, year: number) {
+    return this.api.fetchLatestBankApply(shipId, year);
+  }
+
   bankPositive(input: { shipId: string; year: number; amount?: number }) {
     return this.api.bankPositiveCompliance(input);
   }

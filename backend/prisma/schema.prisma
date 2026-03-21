@@ -60,6 +60,18 @@ model BankEntry {
   @@index([shipId, year])
 }
 
+model BankApplySnapshot {
+  id        String   @id @default(uuid())
+  shipId    String
+  year      Int
+  cbBefore  Float
+  applied   Float
+  cbAfter   Float
+  createdAt DateTime @default(now())
+
+  @@index([shipId, year, createdAt])
+}
+
 model Pool {
   id        String       @id
   year      Int

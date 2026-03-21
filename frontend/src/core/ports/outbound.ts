@@ -16,6 +16,7 @@ export interface MarineApiPort {
   fetchCompliance(shipId: string, year: number): Promise<ComplianceRecord>;
   fetchAdjustedCompliance(shipId: string, year: number): Promise<AdjustedCompliance>;
   fetchBankRecords(shipId: string, year?: number): Promise<BankEntry[]>;
+  fetchLatestBankApply(shipId: string, year: number): Promise<ApplyResult | null>;
   bankPositiveCompliance(input: { shipId: string; year: number; amount?: number }): Promise<BankResult>;
   applyBankToDeficit(input: { shipId: string; year: number; amount: number }): Promise<ApplyResult>;
   createPool(input: { shipIds: string[]; year: number }): Promise<PoolResult>;

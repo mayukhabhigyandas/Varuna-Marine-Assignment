@@ -60,6 +60,10 @@ export class MarineApiClient implements MarineApiPort {
     return this.client.get<BankEntry[]>(withQuery("/banking/records", { shipId, year }));
   }
 
+  fetchLatestBankApply(shipId: string, year: number): Promise<ApplyResult | null> {
+    return this.client.get<ApplyResult | null>(withQuery("/banking/latest-apply", { shipId, year }));
+  }
+
   bankPositiveCompliance(input: { shipId: string; year: number; amount?: number }): Promise<BankResult> {
     return this.client.post<BankResult>("/banking/bank", input);
   }

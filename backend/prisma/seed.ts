@@ -63,6 +63,7 @@ const routeShipSeedData = [
 async function main() {
   await prisma.poolMember.deleteMany();
   await prisma.pool.deleteMany();
+  await prisma.bankApplySnapshot.deleteMany();
   await prisma.bankEntry.deleteMany();
   await prisma.complianceRecord.deleteMany();
   await prisma.shipEmission.deleteMany();

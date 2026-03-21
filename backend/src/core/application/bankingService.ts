@@ -25,6 +25,10 @@ export class BankingService {
     return this.bankRepository.listByShip(shipId, year);
   }
 
+  async getLatestApplySnapshot(shipId: string, year: number) {
+    return this.bankRepository.getLatestApplySnapshot(shipId, year);
+  }
+
   async bankPositiveCompliance(input: BankPositiveInput) {
     const cbRecord = await this.complianceService.getOrComputeComplianceBalance(input.shipId, input.year);
 
@@ -75,12 +79,14 @@ export class BankingService {
     }
 
     const cbRecord = await this.complianceService.getOrComputeComplianceBalance(input.shipId, input.year);
+    const latestSnapshot = await this.bankRepository.getLatestApplySnapshot(input.shipId, input.year);
+    const currentBalance = latestSnapshot?.cbAfter ?? cbRecord.complianceBalance;
 
-    if (cbRecord.complianceBalance >= 0) {
+    if (currentBalance >= 0) {
       throw new DomainError("Bank can only be applied to deficit compliance balances", 400);
     }
 
-    const deficit = Math.abs(cbRecord.complianceBalance);
+    const deficit = Math.abs(currentBalance);
     const entries = await this.bankRepository.listByShipUpToYear(input.shipId, input.year);
     const available = entries.reduce((sum, entry) => sum + (entry.amount - entry.usedAmount), 0);
 
@@ -93,14 +99,23 @@ export class BankingService {
     }
 
     const applications = await this.bankRepository.applyAmount(input.shipId, input.year, input.amount);
-
-    return {
+    const result = {
       shipId: input.shipId,
       year: input.year,
-      originalDeficit: cbRecord.complianceBalance,
+      originalDeficit: currentBalance,
       appliedAmount: input.amount,
-      adjustedComplianceBalance: cbRecord.complianceBalance + input.amount,
+      adjustedComplianceBalance: currentBalance + input.amount,
       applications,
     };
+
+    await this.bankRepository.saveApplySnapshot({
+      shipId: result.shipId,
+      year: result.year,
+      cbBefore: result.originalDeficit,
+      applied: result.appliedAmount,
+      cbAfter: result.adjustedComplianceBalance,
+    });
+
+    return result;
   }
 }

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import {
+  BankApplySnapshot,
   BankApplication,
   BankEntry,
   ComplianceRecord,
@@ -242,6 +243,39 @@ export class PostgresBankRepository implements BankRepository {
 
       return applications;
     });
+  }
+
+  async saveApplySnapshot(snapshot: Omit<BankApplySnapshot, "id" | "createdAt">): Promise<BankApplySnapshot> {
+    const created = await this.prisma.bankApplySnapshot.create({
+      data: {
+        shipId: snapshot.shipId,
+        year: snapshot.year,
+        cbBefore: snapshot.cbBefore,
+        applied: snapshot.applied,
+        cbAfter: snapshot.cbAfter,
+      },
+    });
+
+    return {
+      ...created,
+      createdAt: created.createdAt.toISOString(),
+    };
+  }
+
+  async getLatestApplySnapshot(shipId: string, year: number): Promise<BankApplySnapshot | null> {
+    const snapshot = await this.prisma.bankApplySnapshot.findFirst({
+      where: { shipId, year },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!snapshot) {
+      return null;
+    }
+
+    return {
+      ...snapshot,
+      createdAt: snapshot.createdAt.toISOString(),
+    };
   }
 }
 

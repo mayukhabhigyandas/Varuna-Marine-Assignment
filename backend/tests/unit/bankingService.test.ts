@@ -121,4 +121,36 @@ describe("BankingService", () => {
     expect(result.adjustedComplianceBalance).toBe(-300);
     expect(result.applications).toEqual([{ entryId: "entry-1", appliedAmount: 200 }]);
   });
+
+  it("rejects applying again when latest cb_after is already zero", async () => {
+    const complianceService = {
+      getOrComputeComplianceBalance: vi.fn(async () => ({
+        shipId: "ship-002",
+        year: 2025,
+        targetIntensity: 89.3368,
+        actualIntensity: 96,
+        energyInScopeMj: 4100000,
+        complianceBalance: -500,
+        createdAt: new Date().toISOString(),
+      })),
+    } as unknown as ComplianceService;
+
+    const bankRepository = createMockBankRepository({
+      getLatestApplySnapshot: async () => ({
+        id: "apply-1",
+        shipId: "ship-002",
+        year: 2025,
+        cbBefore: -100,
+        applied: 100,
+        cbAfter: 0,
+        createdAt: new Date().toISOString(),
+      }),
+    });
+
+    const service = new BankingService(complianceService, bankRepository);
+
+    await expect(
+      service.applyBankToDeficit({ shipId: "ship-002", year: 2025, amount: 10 }),
+    ).rejects.toThrow("Bank can only be applied to deficit compliance balances");
+  });
 });

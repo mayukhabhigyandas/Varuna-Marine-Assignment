@@ -135,6 +135,32 @@ export function createHttpRouter(services: Services): Router {
     }),
   );
 
+  router.get(
+    "/banking/latest-apply",
+    wrap(async (req, res) => {
+      const shipId = requireQueryString(req.query.shipId, "shipId");
+      const year = requireInteger(req.query.year, "year");
+
+      const snapshot = await services.bankingService.getLatestApplySnapshot(shipId, year);
+      if (!snapshot) {
+        res.json({ success: true, data: null });
+        return;
+      }
+
+      res.json({
+        success: true,
+        data: {
+          shipId: snapshot.shipId,
+          year: snapshot.year,
+          originalDeficit: snapshot.cbBefore,
+          appliedAmount: snapshot.applied,
+          adjustedComplianceBalance: snapshot.cbAfter,
+          applications: [],
+        },
+      });
+    }),
+  );
+
   router.post(
     "/pools",
     wrap(async (req, res) => {

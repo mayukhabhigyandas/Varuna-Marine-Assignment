@@ -1,4 +1,5 @@
 import {
+  BankApplySnapshot,
   BankApplication,
   BankEntry,
   ComplianceRecord,
@@ -30,6 +31,8 @@ export interface BankRepository {
   create(entry: Omit<BankEntry, "id" | "createdAt">): Promise<BankEntry>;
   sumBankedFromComplianceYear(shipId: string, sourceComplianceYear: number): Promise<number>;
   applyAmount(shipId: string, upToYear: number, amount: number): Promise<BankApplication[]>;
+  saveApplySnapshot(snapshot: Omit<BankApplySnapshot, "id" | "createdAt">): Promise<BankApplySnapshot>;
+  getLatestApplySnapshot(shipId: string, year: number): Promise<BankApplySnapshot | null>;
 }
 
 export interface PoolRepository {
