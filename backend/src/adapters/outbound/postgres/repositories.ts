@@ -198,6 +198,15 @@ export class PostgresBankRepository implements BankRepository {
     return result._sum.amount ?? 0;
   }
 
+  async sumAppliedSnapshots(shipId: string, year: number): Promise<number> {
+    const result = await this.prisma.bankApplySnapshot.aggregate({
+      where: { shipId, year },
+      _sum: { applied: true },
+    });
+
+    return result._sum.applied ?? 0;
+  }
+
   async applyAmount(shipId: string, upToYear: number, amount: number): Promise<BankApplication[]> {
     return this.prisma.$transaction(async (transaction) => {
       let remaining = amount;

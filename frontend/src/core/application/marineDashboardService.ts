@@ -1,5 +1,6 @@
 import { TARGET_GHG_INTENSITY } from "../domain/constants";
 import type {
+  ApplySummary,
   ComparisonViewModel,
   RouteViewModel,
 } from "../domain/entities";
@@ -116,5 +117,9 @@ export class MarineDashboardService
 
   createPool(input: { shipIds: string[]; year: number }) {
     return this.api.createPool(input);
+  }
+
+  getBankApplySummary(shipId: string, year: number): Promise<ApplySummary> {
+    return this.api.fetchBankApplySummary(shipId, year);
   }
 }

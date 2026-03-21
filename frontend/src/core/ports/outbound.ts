@@ -1,5 +1,6 @@
 import type {
   AdjustedCompliance,
+  ApplySummary,
   ApiRoute,
   ApplyResult,
   BankEntry,
@@ -16,6 +17,7 @@ export interface MarineApiPort {
   fetchCompliance(shipId: string, year: number): Promise<ComplianceRecord>;
   fetchAdjustedCompliance(shipId: string, year: number): Promise<AdjustedCompliance>;
   fetchBankRecords(shipId: string, year?: number): Promise<BankEntry[]>;
+  fetchBankApplySummary(shipId: string, year: number): Promise<ApplySummary>;
   fetchLatestBankApply(shipId: string, year: number): Promise<ApplyResult | null>;
   bankPositiveCompliance(input: { shipId: string; year: number; amount?: number }): Promise<BankResult>;
   applyBankToDeficit(input: { shipId: string; year: number; amount: number }): Promise<ApplyResult>;

@@ -29,6 +29,19 @@ export class BankingService {
     return this.bankRepository.getLatestApplySnapshot(shipId, year);
   }
 
+  async getApplySummary(shipId: string, year: number) {
+    const cbRecord = await this.complianceService.getOrComputeComplianceBalance(shipId, year);
+    const totalApplied = await this.bankRepository.sumAppliedSnapshots(shipId, year);
+
+    return {
+      shipId,
+      year,
+      cbBefore: cbRecord.complianceBalance,
+      applied: totalApplied,
+      cbAfter: cbRecord.complianceBalance + totalApplied,
+    };
+  }
+
   async bankPositiveCompliance(input: BankPositiveInput) {
     const cbRecord = await this.complianceService.getOrComputeComplianceBalance(input.shipId, input.year);
 

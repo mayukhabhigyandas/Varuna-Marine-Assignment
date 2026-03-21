@@ -91,6 +91,14 @@ export interface ApplyResult {
   applications: Array<{ entryId: string; appliedAmount: number }>;
 }
 
+export interface ApplySummary {
+  shipId: string;
+  year: number;
+  cbBefore: number;
+  applied: number;
+  cbAfter: number;
+}
+
 export interface PoolMember {
   poolId: string;
   shipId: string;

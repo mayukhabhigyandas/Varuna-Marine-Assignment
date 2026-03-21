@@ -52,6 +52,7 @@ export function createMockBankRepository(overrides: Partial<BankRepository> = {}
       ...entry,
     }),
     sumBankedFromComplianceYear: async () => 0,
+    sumAppliedSnapshots: async () => 0,
     applyAmount: async () => [],
     saveApplySnapshot: async (snapshot) => ({
       id: "apply-1",

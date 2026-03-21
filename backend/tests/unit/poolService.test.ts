@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ComplianceService } from "../../src/core/application/complianceService";
+import { BankingService } from "../../src/core/application/bankingService";
 import { PoolService } from "../../src/core/application/poolService";
 import { DomainError } from "../../src/core/domain/errors";
 import { createMockPoolRepository } from "../support/repoMocks";
@@ -12,19 +12,17 @@ describe("PoolService", () => {
       "ship-003": -200,
     };
 
-    const complianceService = {
-      getOrComputeComplianceBalance: vi.fn(async (shipId: string, year: number) => ({
+    const bankingService = {
+      getApplySummary: vi.fn(async (shipId: string, year: number) => ({
         shipId,
         year,
-        targetIntensity: 89.3368,
-        actualIntensity: 0,
-        energyInScopeMj: 0,
-        complianceBalance: cbMap[shipId],
-        createdAt: new Date().toISOString(),
+        cbBefore: cbMap[shipId],
+        applied: 0,
+        cbAfter: cbMap[shipId],
       })),
-    } as unknown as ComplianceService;
+    } as unknown as BankingService;
 
-    const service = new PoolService(complianceService, createMockPoolRepository());
+    const service = new PoolService(bankingService, createMockPoolRepository());
 
     const result = await service.createPool({
       year: 2025,
@@ -46,19 +44,17 @@ describe("PoolService", () => {
       "ship-003": -200,
     };
 
-    const complianceService = {
-      getOrComputeComplianceBalance: vi.fn(async (shipId: string, year: number) => ({
+    const bankingService = {
+      getApplySummary: vi.fn(async (shipId: string, year: number) => ({
         shipId,
         year,
-        targetIntensity: 89.3368,
-        actualIntensity: 0,
-        energyInScopeMj: 0,
-        complianceBalance: cbMap[shipId],
-        createdAt: new Date().toISOString(),
+        cbBefore: cbMap[shipId],
+        applied: 0,
+        cbAfter: cbMap[shipId],
       })),
-    } as unknown as ComplianceService;
+    } as unknown as BankingService;
 
-    const service = new PoolService(complianceService, createMockPoolRepository());
+    const service = new PoolService(bankingService, createMockPoolRepository());
 
     await expect(
       service.createPool({ year: 2025, shipIds: ["ship-001", "ship-002", "ship-003"] }),

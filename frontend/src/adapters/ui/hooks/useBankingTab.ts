@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ApplyResult, ComplianceRecord } from "../../../core/domain/entities";
+import type { ApplySummary, ComplianceRecord } from "../../../core/domain/entities";
 import type { BankingTabInputPort } from "../../../core/ports/inbound";
 
 export function useBankingTab(service: BankingTabInputPort, shipOptions: string[], yearOptions: number[]) {
@@ -9,7 +9,7 @@ export function useBankingTab(service: BankingTabInputPort, shipOptions: string[
   const [records, setRecords] = useState<Array<{ id: string; amount: number; usedAmount: number; year: number }>>([]);
   const [bankAmount, setBankAmount] = useState<string>("");
   const [applyAmount, setApplyAmount] = useState<string>("");
-  const [lastApplyResult, setLastApplyResult] = useState<ApplyResult | null>(null);
+  const [applySummary, setApplySummary] = useState<ApplySummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,15 +34,15 @@ export function useBankingTab(service: BankingTabInputPort, shipOptions: string[
     setError(null);
 
     try {
-      const [cb, bankRecords, latestApply] = await Promise.all([
+      const [cb, bankRecords, summary] = await Promise.all([
         service.getCompliance(shipId, year),
         service.getBankRecords(shipId, year),
-        service.getLatestBankApply(shipId, year),
+        service.getBankApplySummary(shipId, year),
       ]);
 
       setCompliance(cb);
       setRecords(bankRecords);
-      setLastApplyResult(latestApply);
+      setApplySummary(summary);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load banking data");
     } finally {
@@ -86,12 +86,11 @@ export function useBankingTab(service: BankingTabInputPort, shipOptions: string[
     setError(null);
 
     try {
-      const result = await service.applyBank({
+      await service.applyBank({
         shipId,
         year,
         amount: Number(applyAmount),
       });
-      setLastApplyResult(result);
       setApplyAmount("");
       await refresh();
     } catch (err) {
@@ -101,10 +100,10 @@ export function useBankingTab(service: BankingTabInputPort, shipOptions: string[
     }
   }, [applyAmount, refresh, service, shipId, year]);
 
-  const cbBefore = lastApplyResult?.originalDeficit ?? compliance?.complianceBalance ?? 0;
-  const applied = lastApplyResult?.appliedAmount ?? 0;
-  const cbAfter = lastApplyResult?.adjustedComplianceBalance ?? cbBefore;
-  const currentBalance = lastApplyResult?.adjustedComplianceBalance ?? compliance?.complianceBalance ?? 0;
+  const cbBefore = applySummary?.cbBefore ?? compliance?.complianceBalance ?? 0;
+  const applied = applySummary?.applied ?? 0;
+  const cbAfter = applySummary?.cbAfter ?? cbBefore;
+  const currentBalance = cbAfter;
 
   const canBank = useMemo(() => currentBalance > 0, [currentBalance]);
   const canApply = useMemo(() => currentBalance < 0, [currentBalance]);

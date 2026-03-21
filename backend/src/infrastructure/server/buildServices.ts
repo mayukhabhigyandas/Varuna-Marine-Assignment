@@ -25,7 +25,7 @@ export function buildServices() {
     bankRepository,
   );
   const bankingService = new BankingService(complianceService, bankRepository);
-  const poolService = new PoolService(complianceService, poolRepository);
+  const poolService = new PoolService(bankingService, poolRepository);
 
   return {
     routeService,

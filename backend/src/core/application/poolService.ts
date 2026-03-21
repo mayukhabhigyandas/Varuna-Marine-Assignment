@@ -1,7 +1,7 @@
 import { DomainError } from "../domain/errors";
 import { PoolMember, PoolTransfer } from "../domain/models";
 import { PoolRepository } from "../ports/repositories";
-import { ComplianceService } from "./complianceService";
+import { BankingService } from "./bankingService";
 
 interface CreatePoolInput {
   shipIds: string[];
@@ -10,7 +10,7 @@ interface CreatePoolInput {
 
 export class PoolService {
   constructor(
-    private readonly complianceService: ComplianceService,
+    private readonly bankingService: BankingService,
     private readonly poolRepository: PoolRepository,
   ) {}
 
@@ -22,8 +22,8 @@ export class PoolService {
 
     const cbByShip = new Map<string, number>();
     for (const shipId of uniqueShipIds) {
-      const record = await this.complianceService.getOrComputeComplianceBalance(shipId, input.year);
-      cbByShip.set(shipId, record.complianceBalance);
+      const summary = await this.bankingService.getApplySummary(shipId, input.year);
+      cbByShip.set(shipId, summary.cbAfter);
     }
 
     const totalCb = [...cbByShip.values()].reduce((sum, value) => sum + value, 0);

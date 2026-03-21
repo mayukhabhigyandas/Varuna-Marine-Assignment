@@ -34,8 +34,18 @@ export function usePoolingTab(service: PoolingTabInputPort, shipOptions: string[
     try {
       const entries = await Promise.all(
         selectedShips.map(async (shipId) => {
-          const result = await service.getAdjustedCompliance(shipId, year);
-          return [shipId, result] as const;
+          const summary = await service.getBankApplySummary(shipId, year);
+          return [
+            shipId,
+            {
+              shipId,
+              year,
+              rawComplianceBalance: summary.cbBefore,
+              adjustedComplianceBalance: summary.cbAfter,
+              appliedFromBank: summary.applied,
+              availableBankBeforeApply: 0,
+            },
+          ] as const;
         }),
       );
 

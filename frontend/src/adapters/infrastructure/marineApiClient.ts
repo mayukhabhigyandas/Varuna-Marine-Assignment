@@ -1,5 +1,6 @@
 import type {
   AdjustedCompliance,
+  ApplySummary,
   ApiRoute,
   ApplyResult,
   BankEntry,
@@ -58,6 +59,10 @@ export class MarineApiClient implements MarineApiPort {
 
   fetchBankRecords(shipId: string, year?: number): Promise<BankEntry[]> {
     return this.client.get<BankEntry[]>(withQuery("/banking/records", { shipId, year }));
+  }
+
+  fetchBankApplySummary(shipId: string, year: number): Promise<ApplySummary> {
+    return this.client.get<ApplySummary>(withQuery("/banking/apply-summary", { shipId, year }));
   }
 
   fetchLatestBankApply(shipId: string, year: number): Promise<ApplyResult | null> {

@@ -1,5 +1,6 @@
 import type {
   AdjustedCompliance,
+  ApplySummary,
   ApplyResult,
   BankEntry,
   BankResult,
@@ -21,6 +22,7 @@ export interface CompareTabInputPort {
 export interface BankingTabInputPort {
   getCompliance(shipId: string, year: number): Promise<ComplianceRecord>;
   getBankRecords(shipId: string, year?: number): Promise<BankEntry[]>;
+  getBankApplySummary(shipId: string, year: number): Promise<ApplySummary>;
   getLatestBankApply(shipId: string, year: number): Promise<ApplyResult | null>;
   bankPositive(input: { shipId: string; year: number; amount?: number }): Promise<BankResult>;
   applyBank(input: { shipId: string; year: number; amount: number }): Promise<ApplyResult>;
@@ -28,5 +30,6 @@ export interface BankingTabInputPort {
 
 export interface PoolingTabInputPort {
   getAdjustedCompliance(shipId: string, year: number): Promise<AdjustedCompliance>;
+  getBankApplySummary(shipId: string, year: number): Promise<ApplySummary>;
   createPool(input: { shipIds: string[]; year: number }): Promise<PoolResult>;
 }

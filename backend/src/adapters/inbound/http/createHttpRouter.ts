@@ -161,6 +161,17 @@ export function createHttpRouter(services: Services): Router {
     }),
   );
 
+  router.get(
+    "/banking/apply-summary",
+    wrap(async (req, res) => {
+      const shipId = requireQueryString(req.query.shipId, "shipId");
+      const year = requireInteger(req.query.year, "year");
+
+      const summary = await services.bankingService.getApplySummary(shipId, year);
+      res.json({ success: true, data: summary });
+    }),
+  );
+
   router.post(
     "/pools",
     wrap(async (req, res) => {
