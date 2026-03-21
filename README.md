@@ -172,3 +172,202 @@ npm run test:watch
 ```
 
 Frontend currently includes build and lint checks; dedicated test scripts are not configured in package scripts.
+
+## Sample API Requests and Responses
+
+### 1) Get Compliance Balance
+
+**Request:**
+
+```bash
+curl -X GET "http://localhost:3000/compliance/cb?shipId=SHIP_R001&year=2024"
+```
+
+**Response:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "id": 10,
+        "shipId": "SHIP_R001",
+        "year": 2024,
+        "targetIntensity": 89.3368,
+        "actualIntensity": 91,
+        "energyInScopeMj": 205000000,
+        "complianceBalance": -340956000.0000007,
+        "createdAt": "2026-03-21T10:03:51.847Z"
+    }
+}
+```
+
+### 2) Bank Positive Compliance
+
+**Request:**
+
+```bash
+curl -X POST "http://localhost:3000/banking/bank" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "shipId": "SHIP_R002",
+    "year": 2024,
+    "amount": 263082239
+  }'
+```
+
+**Response:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "entry": {
+            "id": "28de8b8c-3fbf-4202-9872-eed2a4186631",
+            "shipId": "SHIP_R002",
+            "year": 2024,
+            "amount": 263082239,
+            "usedAmount": 0,
+            "sourceComplianceYear": 2024,
+            "createdAt": "2026-03-21T10:44:24.321Z"
+        },
+        "remainingBankable": 0.9999993145465851
+    }
+}
+```
+
+### 3) Apply Banked Surplus
+
+**Request:**
+
+```bash
+curl -X POST "http://localhost:3000/banking/apply" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "shipId": "SHIP_R002",
+        "year": 2025,
+        "amount": 236071440
+}'
+```
+
+**Response:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "shipId": "SHIP_R002",
+        "year": 2025,
+        "originalDeficit": -236071440.0000007,
+        "appliedAmount": 236071440,
+        "adjustedComplianceBalance": -6.854534149169922e-7,
+        "applications": [
+            {
+                "entryId": "28de8b8c-3fbf-4202-9872-eed2a4186631",
+                "appliedAmount": 236071440
+            }
+        ]
+    }
+}
+```
+
+### 4) Create Pool
+
+**Request:**
+
+```bash
+curl -X POST "http://localhost:3000/pools" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "shipIds": ["SHIP_R002", "SHIP_R004"],
+    "year": 2025
+  }'
+```
+
+**Response:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "pool": {
+            "id": "pool-1774089986212",
+            "year": 2025,
+            "shipIds": [
+                "SHIP_R002",
+                "SHIP_R004"
+            ],
+            "createdAt": "2026-03-21T10:46:26.215Z"
+        },
+        "totalCbBefore": 27483119.999998074,
+        "totalCbAfter": 27483119.999998074,
+        "transfers": [
+            {
+                "fromShipId": "SHIP_R004",
+                "toShipId": "SHIP_R002",
+                "amount": 6.854534149169922e-7
+            }
+        ],
+        "members": [
+            {
+                "poolId": "pool-1774089986212",
+                "shipId": "SHIP_R002",
+                "year": 2025,
+                "cbBefore": -6.854534149169922e-7,
+                "cbAfter": 0
+            },
+            {
+                "poolId": "pool-1774089986212",
+                "shipId": "SHIP_R004",
+                "year": 2025,
+                "cbBefore": 27483119.99999876,
+                "cbAfter": 27483119.999998074
+            }
+        ]
+    }
+}
+```
+
+### 5) Get Bank Apply Summary
+
+**Request:**
+
+```bash
+curl -X GET "http://localhost:3000/banking/apply-summary?shipId=SHIP_R002&year=2025"
+```
+
+**Response:**
+
+```json
+{
+    "success": true,
+    "data": {
+        "shipId": "SHIP_R002",
+        "year": 2024,
+        "cbBefore": 263082239.9999993,
+        "applied": 0,
+        "cbAfter": 263082239.9999993
+    }
+}
+```
+
+## Frontend UI Overview
+
+### Routes Tab
+- Displays all routes with GHG intensity, baseline comparison, and compliance status.
+
+### Compliance Tab
+- Shows compliance balance, target intensity, and actual intensity.
+
+### Banking Tab
+- **Bank Positive CB**: Bank surplus compliance balance to later years.
+- **Apply Banked Surplus**: Apply previously banked surplus to cover deficit.
+- Cards display: `cb_before`, `applied` (total sum), and `cb_after`.
+
+### Pooling Tab
+- Select multiple ships and create a pool for the selected year.
+- Validates pool rules: no deficit worsening, surplus stays non-negative.
+- Displays ship balances before/after pool and transfers between ships.
+
+### Compare Tab
+- Compare routes by GHG intensity, show percent difference vs. baseline.
+- Highlight compliant/non-compliant routes.
