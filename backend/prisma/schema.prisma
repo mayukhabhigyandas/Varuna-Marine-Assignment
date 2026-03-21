@@ -37,6 +37,7 @@ model ShipEmission {
 }
 
 model ComplianceRecord {
+  id                Int      @id @default(autoincrement())
   shipId            String
   year              Int
   targetIntensity   Float
@@ -45,7 +46,8 @@ model ComplianceRecord {
   complianceBalance Float
   createdAt         DateTime @default(now())
 
-  @@id([shipId, year])
+  @@unique([shipId, year])
+  @@map("ship_compliance")
 }
 
 model BankEntry {
