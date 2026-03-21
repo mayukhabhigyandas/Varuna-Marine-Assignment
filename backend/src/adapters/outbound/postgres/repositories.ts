@@ -306,6 +306,18 @@ export class PostgresPoolRepository implements PoolRepository {
     };
   }
 
+  async listByYear(year: number): Promise<Pool[]> {
+    const pools = await this.prisma.pool.findMany({
+      where: { year },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return pools.map((pool) => ({
+      ...pool,
+      createdAt: pool.createdAt.toISOString(),
+    }));
+  }
+
   async saveMembers(members: PoolMember[]): Promise<PoolMember[]> {
     await this.prisma.poolMember.createMany({
       data: members.map((member) => ({

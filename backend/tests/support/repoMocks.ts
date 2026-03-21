@@ -70,6 +70,7 @@ export function createMockPoolRepository(overrides: Partial<PoolRepository> = {}
       ...pool,
       createdAt: new Date().toISOString(),
     }),
+    listByYear: async () => [],
     saveMembers: async (members: PoolMember[]) => members,
     ...overrides,
   };

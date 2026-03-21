@@ -38,5 +38,6 @@ export interface BankRepository {
 
 export interface PoolRepository {
   create(pool: Omit<Pool, "createdAt">): Promise<Pool>;
+  listByYear(year: number): Promise<Pool[]>;
   saveMembers(members: PoolMember[]): Promise<PoolMember[]>;
 }

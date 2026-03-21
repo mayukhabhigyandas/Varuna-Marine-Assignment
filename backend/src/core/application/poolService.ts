@@ -8,6 +8,10 @@ interface CreatePoolInput {
   year: number;
 }
 
+function normalizeShipSet(shipIds: string[]): string[] {
+  return [...new Set(shipIds)].sort((a, b) => a.localeCompare(b));
+}
+
 export class PoolService {
   constructor(
     private readonly bankingService: BankingService,
@@ -15,9 +19,23 @@ export class PoolService {
   ) {}
 
   async createPool(input: CreatePoolInput) {
-    const uniqueShipIds = [...new Set(input.shipIds)];
+    const uniqueShipIds = normalizeShipSet(input.shipIds);
     if (uniqueShipIds.length === 0) {
       throw new DomainError("shipIds cannot be empty", 400);
+    }
+
+    const existingPools = await this.poolRepository.listByYear(input.year);
+    const duplicateExists = existingPools.some((pool) => {
+      const existingShipIds = normalizeShipSet(pool.shipIds);
+      if (existingShipIds.length !== uniqueShipIds.length) {
+        return false;
+      }
+
+      return existingShipIds.every((shipId, index) => shipId === uniqueShipIds[index]);
+    });
+
+    if (duplicateExists) {
+      throw new DomainError("Pool already exists for the same ships in this year", 400);
     }
 
     const cbByShip = new Map<string, number>();

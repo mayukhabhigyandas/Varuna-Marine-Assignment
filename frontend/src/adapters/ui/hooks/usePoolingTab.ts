@@ -83,7 +83,25 @@ export function usePoolingTab(service: PoolingTabInputPort, shipOptions: string[
     [adjustedRows],
   );
 
-  const canCreatePool = selectedShips.length > 1 && poolSum >= 0 && !loading;
+  const normalizedSelectedShips = useMemo(
+    () => [...selectedShips].sort((a, b) => a.localeCompare(b)),
+    [selectedShips],
+  );
+
+  const hasCreatedCurrentSelection = useMemo(() => {
+    if (!poolResult || poolResult.pool.year !== year) {
+      return false;
+    }
+
+    const normalizedCreatedShips = [...poolResult.pool.shipIds].sort((a, b) => a.localeCompare(b));
+    if (normalizedCreatedShips.length !== normalizedSelectedShips.length) {
+      return false;
+    }
+
+    return normalizedCreatedShips.every((shipId, index) => shipId === normalizedSelectedShips[index]);
+  }, [normalizedSelectedShips, poolResult, year]);
+
+  const canCreatePool = selectedShips.length > 1 && poolSum >= 0 && !loading && !hasCreatedCurrentSelection;
 
   const createPool = useCallback(async () => {
     if (!canCreatePool) {
@@ -147,6 +165,7 @@ export function usePoolingTab(service: PoolingTabInputPort, shipOptions: string[
     adjustedRows,
     poolSum,
     canCreatePool,
+    hasCreatedCurrentSelection,
     ruleStatus,
     poolResult,
     loading,

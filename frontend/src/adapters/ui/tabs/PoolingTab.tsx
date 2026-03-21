@@ -82,6 +82,11 @@ export function PoolingTab({ service }: PoolingTabProps) {
       >
         Create Pool
       </button>
+      {pooling.hasCreatedCurrentSelection ? (
+        <p className="text-sm text-slate-600">
+          Pool already created for this ship combination in the selected year.
+        </p>
+      ) : null}
 
       <div className="overflow-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full text-left text-sm">

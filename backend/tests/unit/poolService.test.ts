@@ -60,4 +60,39 @@ describe("PoolService", () => {
       service.createPool({ year: 2025, shipIds: ["ship-001", "ship-002", "ship-003"] }),
     ).rejects.toThrowError(DomainError);
   });
+
+  it("rejects duplicate pool for same ships in same year", async () => {
+    const cbMap: Record<string, number> = {
+      "ship-001": 100,
+      "ship-002": 50,
+    };
+
+    const bankingService = {
+      getApplySummary: vi.fn(async (shipId: string, year: number) => ({
+        shipId,
+        year,
+        cbBefore: cbMap[shipId],
+        applied: 0,
+        cbAfter: cbMap[shipId],
+      })),
+    } as unknown as BankingService;
+
+    const service = new PoolService(
+      bankingService,
+      createMockPoolRepository({
+        listByYear: async () => [
+          {
+            id: "pool-existing",
+            year: 2025,
+            shipIds: ["ship-002", "ship-001"],
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      }),
+    );
+
+    await expect(
+      service.createPool({ year: 2025, shipIds: ["ship-001", "ship-002"] }),
+    ).rejects.toThrowError(DomainError);
+  });
 });
