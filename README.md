@@ -99,6 +99,20 @@ npx prisma generate
 npm run prisma:seed
 ```
 
+### ShipEmission seeded data (different routes)
+
+The following rows are inserted from `backend/prisma/seed.ts`.
+
+| shipId | routeId | year | vesselType | fuelType | fuelConsumptionTons | distanceKm | totalEmissionsTonnes | actualIntensity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SHIP_R001 | R001 | 2024 | Container | HFO | 5000 | 12000 | 4500 | 91.0 |
+| SHIP_R002 | R002 | 2024 | BulkCarrier | LNG | 4800 | 11500 | 4200 | 88.0 |
+| SHIP_R003 | R003 | 2024 | Tanker | MGO | 5100 | 12500 | 4700 | 93.5 |
+| SHIP_R004 | R004 | 2025 | RoRo | HFO | 4900 | 11800 | 4300 | 89.2 |
+| SHIP_R002 | R005 | 2025 | Container | LNG | 4950 | 11900 | 4400 | 90.5 |
+
+Note: SHIP_R002 is allotted to two routes across years: R002 in 2024 and R005 in 2025.
+
 ### 4) Run backend
 
 From backend:

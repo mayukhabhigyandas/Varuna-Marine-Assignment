@@ -204,13 +204,13 @@ Add id column in table ship_compliance
 **Generated Prisma Schema Changes:**
 ```prisma
 model ComplianceRecord {
-  id        BigInt    @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   shipId    String
   year      Int
   targetIntensity Float
   actualIntensity Float
   energyInScopeMj BigInt
-  complianceBalance BigInt
+  complianceBalance Int
   createdAt DateTime  @default(now())
 
   @@unique([shipId, year])
