@@ -347,12 +347,7 @@ END $$;
    - Reality: Required idempotent DO blocks with IF EXISTS checks for Prisma validate to pass.
    - **Resolution**: Manual intervention to add defensive SQL; agent then correctly applied corrections on second request.
 
-2. **Assumption About Data Types**: Agent initially used `Int` for some BigInt fields (compliance balance).
-   - Generated: `complianceBalance: Int` in some early schema drafts.
-   - Reality: Compliance balances can exceed Int32 range (40B+ values in shipping context).
-   - **Resolution**: Explicitly corrected to BigInt; agent adhered to this constraint going forward.
-
-3. **Incomplete Type Coverage**: Frontend entity types initially missed `ApplySummary` interface.
+2. **Incomplete Type Coverage**: Frontend entity types initially missed `ApplySummary` interface.
    - Generated: Port methods without corresponding domain entity.
    - Reality: Frontend needed explicit `ApplySummary` interface matching service contract.
    - **Resolution**: Requested type definition; agent added it immediately and wired through layers.
